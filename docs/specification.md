@@ -123,7 +123,15 @@ TODO
 
 #### Encoding Truth Tables
 
-TODO
+Encoding truth tables for BreadMISC is relatively easy to do. First of all, you need an actual truth table. Here's an example truth table for XOR:
+
+| A | B | A ^ B |
+| 0 | 0 | 0     |
+| 0 | 1 | 1     |
+| 1 | 0 | 1     |
+| 1 | 1 | 0     |
+
+Using the truth table, we need to encode the result in binary. To do this, we simply take the first position(where A = 0 and B = 0) and make that the first bit(ones place) of our encoded truth table. Then we take the second position(where A = 0 and B = 1) and make it the second bit(twos place). If you keep following that pattern, you should end up with the encoded truth table 6. You can use this process to find all 16 logic gates.
 
 ### Bitwise Shift
 
