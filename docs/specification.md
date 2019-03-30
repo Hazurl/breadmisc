@@ -8,11 +8,11 @@ BreadMISC is an instruction set architecture designed for creating an architectu
 
 ## System Specification
 
-| Property                   | 16-bit  | 32-bit |
-| -------------------------- | ------- | ------ |
-| Maximum Addressable Memory | 128 KiB | 16 GiB |
-| Maximum Peripherals        | 8       | ?      |
-| Register Count             | 4       | ?      |
+| Property                   | 16-bit  |
+| -------------------------- | ------- |
+| Maximum Addressable Memory | 128 KiB |
+| Maximum Peripherals        | 8       |
+| Register Count             | 4       |
 
 ## List of instructions
 
@@ -64,10 +64,6 @@ These are instructions that don't exist but can be recreated using the existing 
 | Instruction Code     | 3b   | 7        | The instruction to be executed                                                    |
 | Instruction Specific | 6b   | 10       | Instruction-specific data                                                         |
 
-### 32-bit
-
-TODO
-
 ## Instruction-Specific Documentation
 
 ### Add
@@ -81,10 +77,6 @@ TODO
 | Immediate  | 1b   | 10       | Whether the operation adds an immediate or a value of a register to a register |
 | Register A | 2b   | 11       | The source register to add to                                                  |
 | Register B | 2b   | 13       | The register to add to the source register                                     |
-
-##### 32-bit
-
-TODO
 
 #### Notes
 
@@ -102,10 +94,6 @@ If the immediate flag is set then the next word read from memory is the number t
 | Register   | 2b   | 11       | The register to read from or write to          |
 | Peripheral | 3b   | 13       | The peripheral to read from or write to        |
 
-##### 32-bit
-
-TODO
-
 ### Bitwise Operation
 
 #### Instruction Specific Data
@@ -116,10 +104,6 @@ TODO
 | ----------- | ---- | -------- | --------------------------------------------- |
 | Register B  | 2b   | 10       | The register to get the second value from     |
 | Truth Table | 4b   | 12       | The truth table to use to process the numbers |
-
-##### 32-bit
-
-TODO
 
 #### Encoding Truth Tables
 
@@ -147,10 +131,6 @@ Using the truth table, we need to encode the result in binary. To do this, we si
 | Register A | 2b   | 12       | The register which contains the value to be shifted and will store the result |
 | Register B | 2b   | 14       | The register which contains the number of bits to shift                       |
 
-##### 32-bit
-
-TODO
-
 #### Notes
 
 If the immediate flag is set then the next word read from memory is the number to be added to the register.
@@ -168,13 +148,9 @@ If the immediate flag is set then the next word read from memory is the number t
 | Register A      | 2b   | 12       | The register to move data to                                                                                                                   |
 | Register B      | 2b   | 14       | The register to move data from                                                                                                                 |
 
-##### 32-bit
-
-TODO
-
 #### Notes
 
-If the immediate flag is set then the next word read from memory is the number to be added to the register.
+If the immediate flag is set then the next word read from memory is the number to be added to the register. If the memory flag is set then the next word read from memory is the pointer to the data to be read/written to.
 
 ## Calling Convention
 
