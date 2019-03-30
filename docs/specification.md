@@ -126,6 +126,7 @@ TODO
 Encoding truth tables for BreadMISC is relatively easy to do. First of all, you need an actual truth table. Here's an example truth table for XOR:
 
 | A | B | A ^ B |
+| - | - | ----- |
 | 0 | 0 | 0     |
 | 0 | 1 | 1     |
 | 1 | 0 | 1     |
