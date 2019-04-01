@@ -8,11 +8,10 @@ BreadMISC is an instruction set architecture designed for creating an architectu
 
 ## System Specification
 
-| Property                   | 16-bit  |
-| -------------------------- | ------- |
-| Maximum Addressable Memory | 128 KiB |
-| Maximum Peripherals        | 8       |
-| Register Count             | 4       |
+| Property                   | 16-bit  | 32-bit | 64-bit  | 128-bit | 256-bit |
+| -------------------------- | ------- | ------ | ------- | ------- | ------- |
+| Maximum Addressable Memory | 128 KiB | 16 GiB | 128 EiB | ?       | ?       |
+| Register Count             | 4       | 16     | ?       | ?       | ?       |
 
 ## List of instructions
 
@@ -21,27 +20,26 @@ BreadMISC is an instruction set architecture designed for creating an architectu
 | add      | Add               | 0                | Adds the values of two registers together                                                   |
 | mov      | Move              | 1                | Moves the value of something to/from a register                                             |
 | bop      | Bitwise Operation | 2                | Performs a bitwise operation on r0 using a truth table and the value of a register          |
-| aux      | Auxiliary         | 3                | Sends data from a register to a peripheral or receives data from a peripheral to a register |
-| bsh      | Bitwise Shift     | 4                | Performs a bitwise shift operation on a register                                            |
-| wdr      | Watchdog Reset    | 5                | Resets the watchdog timer to prevent the system from rebooting                              |
+| bsh      | Bitwise Shift     | 3                | Performs a bitwise shift operation on a register                                            |
 
 ## List of pseudo instructions
 
 These are instructions that don't exist but can be recreated using the existing instructions.
 
-| Mnemonic | Instruction Name    | Equivalent Instruction | Note                                                                     |
-| -------- | ------------------- | ---------------------- | ------------------------------------------------------------------------ |
-| and      | AND                 | bop                    | Using truth table 8                                                      |
-| jmp      | Jump to Instruction | mov                    | Move the address to rp                                                   |
-| lsh      | Left Bitwise Shift  | bsh                    | The bitwise shift instruction does exactly this(Direction flag 0)        |
-| nand     | NOT AND             | bop                    | Using truth table 7                                                      |
-| nor      | NOT OR              | bop                    | Using truth table 1                                                      |
-| not      | NOT                 | bop                    | Using truth table 3 or 5(depending on which bit you want to flip)        |
-| or       | OR                  | bop                    | Using truth table 14                                                     |
-| rsh      | Right Bitwise Shift | bsh                    | The bitwise shift instruction does exactly this(Direction flag 1)        |
-| sub      | Subtract            | add                    | Adding a negative number works the same as subtracting a positive number |
-| xnor     | Exclusive NOT OR    | bop                    | Using truth table 5                                                      |
-| xor      | Exclusive OR        | bop                    | Using truth table 6                                                      |
+| Mnemonic | Instruction Name    | Equivalent Instruction | Note                                                                                            |
+| -------- | ------------------- | ---------------------- | ----------------------------------------------------------------------------------------------- |
+| and      | AND                 | bop                    | Using truth table 8                                                                             |
+| cmp      | Compare             | N/A                    | All instructions are encoded with a comparison statement to determine whether it should execute |
+| jmp      | Jump to Instruction | mov                    | Move the address to rp                                                                          |
+| lsh      | Left Bitwise Shift  | bsh                    | The bitwise shift instruction does exactly this(Direction flag 0)                               |
+| nand     | NOT AND             | bop                    | Using truth table 7                                                                             |
+| nor      | NOT OR              | bop                    | Using truth table 1                                                                             |
+| not      | NOT                 | bop                    | Using truth table 3 or 5(depending on which bit you want to flip)                               |
+| or       | OR                  | bop                    | Using truth table 14                                                                            |
+| rsh      | Right Bitwise Shift | bsh                    | The bitwise shift instruction does exactly this(Direction flag 1)                               |
+| sub      | Subtract            | add                    | Adding a negative number works the same as subtracting a positive number                        |
+| xnor     | Exclusive NOT OR    | bop                    | Using truth table 5                                                                             |
+| xor      | Exclusive OR        | bop                    | Using truth table 6                                                                             |
 
 ## List of registers
 
@@ -50,7 +48,19 @@ These are instructions that don't exist but can be recreated using the existing 
 | r0       | Register 0       | 0           | 0           | General Purpose Register |
 | r1       | Register 1       | 1           | 1           | General Purpose Register |
 | r2       | Register 2       | 2           | 2           | General Purpose Register |
-| rp       | Pointer Register | 3           | ?           | Instruction Pointer      |
+| r3       | Register 3       | N/A         | 3           | General Purpose Register |
+| r4       | Register 4       | N/A         | 4           | General Purpose Register |
+| r5       | Register 5       | N/A         | 5           | General Purpose Register |
+| r6       | Register 6       | N/A         | 6           | General Purpose Register |
+| r7       | Register 7       | N/A         | 7           | General Purpose Register |
+| r8       | Register 8       | N/A         | 8           | General Purpose Register |
+| r9       | Register 9       | N/A         | 9           | General Purpose Register |
+| r10      | Register 10      | N/A         | 10          | General Purpose Register |
+| r11      | Register 11      | N/A         | 11          | General Purpose Register |
+| r12      | Register 12      | N/A         | 12          | General Purpose Register |
+| r13      | Register 13      | N/A         | 13          | General Purpose Register |
+| r14      | Register 14      | N/A         | 14          | General Purpose Register |
+| rp       | Pointer Register | 3           | 15          | Instruction Pointer      |
 
 ## Instruction Encoding
 
@@ -61,8 +71,26 @@ These are instructions that don't exist but can be recreated using the existing 
 | Condition Register A | 2b   | 0        | The first register to be used in condition checking                               |
 | Condition Register B | 2b   | 2        | The second register to be used in condition checking                              |
 | Condition Operation  | 3b   | 4        | The condition operator to use to determine whether the instruction should execute |
-| Instruction Code     | 3b   | 7        | The instruction to be executed                                                    |
+| Instruction Code     | 2b   | 7        | The instruction to be executed                                                    |
+| High Level Bit       | 1b   | 9        | Whether the instruction is designed for a processor with more than 16 bits        |
 | Instruction Specific | 6b   | 10       | Instruction-specific data                                                         |
+
+### 32-bit
+
+In addition to the 16-bit fields, 32-bit adds additional data for word lengths beyond 16-bit as well as additional registers for general purpose use.
+
+| Field Name                  | Size | Position | Description                                                       |
+| --------------------------- | ---- | -------- | ----------------------------------------------------------------- |
+| Word Size                   | 2b   | 16       | Determines the word size of the instruction(2^(5+n) bits)         |
+| Conditional Register Bank A | 2b   | 18       | Determines the register bank to get Conditional Register A from   |
+| Conditional Register Bank B | 2b   | 20       | Determines the register bank to get Conditional Register B from   |
+| Source Register Bank        | 2b   | 22       | Determines the register bank to get the Source Register from      |
+| Destination Register Bank   | 2b   | 24       | Determines the register bank to get the Destination Register from |
+| Reserved                    | 6b   | 26       | Reserved for future use                                           |
+
+#### Note
+
+Register banks are really just the upper two bits of the register code.
 
 ## Instruction-Specific Documentation
 
@@ -78,21 +106,13 @@ These are instructions that don't exist but can be recreated using the existing 
 | Register A | 2b   | 11       | The source register to add to                                                  |
 | Register B | 2b   | 13       | The register to add to the source register                                     |
 
+##### 32-bit
+
+BreadMISC32 does not add any additional data to this instruction.
+
 #### Notes
 
 If the immediate flag is set then the next word read from memory is the number to be added to the register.
-
-### Auxiliary
-
-#### Instruction Specific Data
-
-##### 16-bit
-
-| Field Name | Size | Position | Description                                    |
-| ---------- | ---- | -------- | ---------------------------------------------- |
-| Read/Write | 1b   | 10       | Whether the operation writes to the peripheral |
-| Register   | 2b   | 11       | The register to read from or write to          |
-| Peripheral | 3b   | 13       | The peripheral to read from or write to        |
 
 ### Bitwise Operation
 
@@ -104,6 +124,10 @@ If the immediate flag is set then the next word read from memory is the number t
 | ----------- | ---- | -------- | --------------------------------------------- |
 | Register B  | 2b   | 10       | The register to get the second value from     |
 | Truth Table | 4b   | 12       | The truth table to use to process the numbers |
+
+##### 32-bit
+
+BreadMISC32 does not add any additional data to this instruction.
 
 #### Encoding Truth Tables
 
@@ -131,6 +155,10 @@ Using the truth table, we need to encode the result in binary. To do this, we si
 | Register A | 2b   | 12       | The register which contains the value to be shifted and will store the result |
 | Register B | 2b   | 14       | The register which contains the number of bits to shift                       |
 
+##### 32-bit
+
+BreadMISC32 does not add any additional data to this instruction.
+
 #### Notes
 
 If the immediate flag is set then the next word read from memory is the number to be added to the register.
@@ -148,10 +176,18 @@ If the immediate flag is set then the next word read from memory is the number t
 | Register A      | 2b   | 12       | The register to move data to                                                                                                                   |
 | Register B      | 2b   | 14       | The register to move data from                                                                                                                 |
 
+##### 32-bit
+
+BreadMISC32 does not add any additional data to this instruction.
+
 #### Notes
 
 If the immediate flag is set then the next word read from memory is the number to be added to the register. If the memory flag is set then the next word read from memory is the pointer to the data to be read/written to.
 
 ## Calling Convention
+
+TODO
+
+## Memory Map
 
 TODO
