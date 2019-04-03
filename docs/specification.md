@@ -199,7 +199,7 @@ If the immediate flag is set then the next word read from memory is the number t
 
 #### Notes
 
-If the immediate flag is set then the next word read from memory is the number to be added to the register. If the memory flag is set then the next word read from memory is the pointer to the data to be read/written to.
+If the memory flag is set, the write bit determines whether the instruction write or read to the memory location in the next word. Otherwise the immediate bit determines whether to use the next word or the register A as the source operand
 
 ## Calling Convention
 
