@@ -43,24 +43,11 @@ These are instructions that don't exist but can be recreated using the existing 
 
 ## List of registers
 
-| Mnemonic | Register Name    | 16-bit Code | 32-bit Code | Description              |
-| -------- | ---------------- | ----------- | ----------- | ------------------------ |
-| r0       | Register 0       | 0           | 0           | General Purpose Register |
-| r1       | Register 1       | 1           | 1           | General Purpose Register |
-| r2       | Register 2       | 2           | 2           | General Purpose Register |
-| r3       | Register 3       | N/A         | 3           | General Purpose Register |
-| r4       | Register 4       | N/A         | 4           | General Purpose Register |
-| r5       | Register 5       | N/A         | 5           | General Purpose Register |
-| r6       | Register 6       | N/A         | 6           | General Purpose Register |
-| r7       | Register 7       | N/A         | 7           | General Purpose Register |
-| r8       | Register 8       | N/A         | 8           | General Purpose Register |
-| r9       | Register 9       | N/A         | 9           | General Purpose Register |
-| r10      | Register 10      | N/A         | 10          | General Purpose Register |
-| r11      | Register 11      | N/A         | 11          | General Purpose Register |
-| r12      | Register 12      | N/A         | 12          | General Purpose Register |
-| r13      | Register 13      | N/A         | 13          | General Purpose Register |
-| r14      | Register 14      | N/A         | 14          | General Purpose Register |
-| rp       | Pointer Register | 3           | 15          | Instruction Pointer      |
+| Mnemonic | Register Name    | 16-bit Code | 32-bit Code | Description               |
+| -------- | ---------------- | ----------- | ----------- | ------------------------- |
+| r0 - r2  | Registers 0 - 2  | 0 - 2       | 0 - 2       | General Purpose Registers |
+| r3 - r30 | Registers 3 - 30 | N/A         | 3 - 30      | General Purpose Registers |
+| rp       | Pointer Register | 3           | 31          | Instruction Pointer       |
 
 ## Instruction Encoding
 
@@ -68,29 +55,41 @@ These are instructions that don't exist but can be recreated using the existing 
 
 | Field Name           | Size | Position | Description                                                                       |
 | -------------------- | ---- | -------- | --------------------------------------------------------------------------------- |
-| Condition Register A | 2b   | 0        | The first register to be used in condition checking                               |
-| Condition Register B | 2b   | 2        | The second register to be used in condition checking                              |
-| Condition Operation  | 3b   | 4        | The condition operator to use to determine whether the instruction should execute |
-| Instruction Code     | 2b   | 7        | The instruction to be executed                                                    |
-| High Level Bit       | 1b   | 9        | Whether the instruction is designed for a processor with more than 16 bits        |
-| Instruction Specific | 6b   | 10       | Instruction-specific data                                                         |
+| High Level Bit       | 1b   | 0        | Whether the instruction is designed for a processor with more than 16 bits        |
+| Condition Register A | 2b   | 1        | The first register to be used in condition checking                               |
+| Condition Register B | 2b   | 3        | The second register to be used in condition checking                              |
+| Condition Operation  | 3b   | 5        | The condition operator to use to determine whether the instruction should execute |
+| Instruction Code     | 2b   | 8        | The instruction to be executed                                                    |
+| Instruction Specific | 6b   | 10       | Instruction-specific data(See section "Instruction-Specific Documentation")       |
 
 ### 32-bit
 
-In addition to the 16-bit fields, 32-bit adds additional data for word lengths beyond 16-bit as well as additional registers for general purpose use.
+| Field Name           | Size | Position | Description                                                                       |
+| -------------------- | ---- | -------- | --------------------------------------------------------------------------------- |
+| High Level Bit       | 1b   | 0        | Whether the instruction is designed for a processor with more than 16 bits        |
+| Instruction Width    | 4b   | 1        | The word size of the operation(2^(5+n) bit)                                       |
+| Condition Register A | 5b   | 5        | The first register to be used in condition checking                               |
+| Condition Register B | 5b   | 10       | The second register to be used in condition checking                              |
+| Condition Operation  | 3b   | 15       | The condition operator to use to determine whether the instruction should execute |
+| Instruction Code     | 2b   | 18       | The instruction to be executed                                                    |
+| Instruction Specific | 12b  | 20       | Instruction-specific data(See section "Instruction-Specific Documentation")       |
 
-| Field Name                  | Size | Position | Description                                                       |
-| --------------------------- | ---- | -------- | ----------------------------------------------------------------- |
-| Word Size                   | 2b   | 16       | Determines the word size of the instruction(2^(5+n) bits)         |
-| Conditional Register Bank A | 2b   | 18       | Determines the register bank to get Conditional Register A from   |
-| Conditional Register Bank B | 2b   | 20       | Determines the register bank to get Conditional Register B from   |
-| Source Register Bank        | 2b   | 22       | Determines the register bank to get the Source Register from      |
-| Destination Register Bank   | 2b   | 24       | Determines the register bank to get the Destination Register from |
-| Reserved                    | 6b   | 26       | Reserved for future use                                           |
+### Condition Operations
+
+| Operation       | Symbol | Code |
+| --------------- | ------ | ---- |
+| Always          | N/A    | 000  |
+| Equal to        | =      | 001  |
+| Greater than    | >      | 010  |
+| Less than       | <      | 011  |
+| Never           | N/A    | 100  |
+| Not equal to    | !=     | 101  |
+| Not grater than | <=     | 110  |
+| Not less than   | >=     | 111  |
 
 #### Note
 
-Register banks are really just the upper two bits of the register code.
+Think of the first four operations as the actual operations and the most significant bit as the negation flag.
 
 ## Instruction-Specific Documentation
 
@@ -108,7 +107,11 @@ Register banks are really just the upper two bits of the register code.
 
 ##### 32-bit
 
-BreadMISC32 does not add any additional data to this instruction.
+| Field Name | Size | Position | Description                                                                    |
+| ---------- | ---- | -------- | ------------------------------------------------------------------------------ |
+| Immediate  | 1b   | 20       | Whether the operation adds an immediate or a value of a register to a register |
+| Register A | 5b   | 21       | The source register to add to                                                  |
+| Register B | 5b   | 26       | The register to add to the source register                                     |
 
 #### Notes
 
@@ -127,7 +130,10 @@ If the immediate flag is set then the next word read from memory is the number t
 
 ##### 32-bit
 
-BreadMISC32 does not add any additional data to this instruction.
+| Field Name  | Size | Position | Description                                   |
+| ----------- | ---- | -------- | --------------------------------------------- |
+| Register B  | 5b   | 20       | The register to get the second value from     |
+| Truth Table | 4b   | 25       | The truth table to use to process the numbers |
 
 #### Encoding Truth Tables
 
@@ -157,7 +163,13 @@ Using the truth table, we need to encode the result in binary. To do this, we si
 
 ##### 32-bit
 
-BreadMISC32 does not add any additional data to this instruction.
+| Field Name | Size | Position | Description                                                                   |
+| ---------- | ---- | -------- | ----------------------------------------------------------------------------- |
+| Direction  | 1b   | 20       | The direction of the bitwise shift                                            |
+| Immediate  | 1b   | 21       | Whether an immediate is used instead of register B                            |
+| Register A | 5b   | 22       | The register which contains the value to be shifted and will store the result |
+| Register B | 5b   | 27       | The register which contains the number of bits to shift                       |
+
 
 #### Notes
 
@@ -178,7 +190,12 @@ If the immediate flag is set then the next word read from memory is the number t
 
 ##### 32-bit
 
-BreadMISC32 does not add any additional data to this instruction.
+| Field Name      | Size | Position | Description                                                                                                                                    |
+| --------------- | ---- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Memory          | 1b   | 20       | Whether memory is used instead of a register or an immediate                                                                                   |
+| Write/Immediate | 1b   | 21       | If the last bit is set, this bit determines whether to write to memory. Otherwise, it determines whether this operation will use an immediate. |
+| Register A      | 5b   | 22       | The register to move data to                                                                                                                   |
+| Register B      | 5b   | 27       | The register to move data from                                                                                                                 |
 
 #### Notes
 
